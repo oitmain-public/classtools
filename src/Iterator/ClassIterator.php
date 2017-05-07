@@ -57,12 +57,14 @@ class ClassIterator implements IteratorAggregate
         /** @var \Symfony\Component\Finder\SplFileInfo $fileInfo */
         foreach ($finder as $fileInfo) {
             $fileInfo = new SplFileInfo($fileInfo);
-            try {
-                foreach ($fileInfo->getReader()->getDefinitionNames() as $name) {
-                    $this->classMap[$name] = $fileInfo;
+            if (!$fileInfo->isDir()) {
+                try {
+                    foreach ($fileInfo->getReader()->getDefinitionNames() as $name) {
+                        $this->classMap[$name] = $fileInfo;
+                    }
+                } catch (ReaderException $exception) {
+                    $this->errors[] = $exception->getMessage();
                 }
-            } catch (ReaderException $exception) {
-                $this->errors[] = $exception->getMessage();
             }
         }
     }
